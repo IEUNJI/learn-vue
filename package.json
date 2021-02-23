@@ -1,0 +1,23 @@
+{
+  "name": "learn-vue",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IEUNJI/learn-vue.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IEUNJI/learn-vue/issues"
+  },
+  "homepage": "https://github.com/IEUNJI/learn-vue#readme",
+  "dependencies": {
+    "vue": "^2.6.12"
+  }
+}
