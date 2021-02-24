@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 
+      v-once
+      v-html
+      v-bind
+      v-for
+      v-if / else / show
+      v-model
+      v-on
+     -->
+    <span>{{name}}</span>
+    <span v-once>{{name}}</span>
+    <div v-html="tmp"></div>
+    <span v-bind:title="title">你好</span>
+    <span :title="title">你好</span>
+    <!-- 
+      template 不能使用 key
+     -->
+    <ul>
+      <template v-for="(item, index) in arr">
+        <li :key="`name-${index}`">{{item.name}}</li>
+        <li :key="`color-${index}`">{{item.color}}</li>
+      </template>
+    </ul>
+    <!-- 
+      template 不能同时使用 v-for 与 v-if
+     -->
+    <template v-if="isShow">
+      <span>显示</span>
+    </template>
+    <template v-else>
+      <span>不显示</span>
+    </template>
+    <!-- 
+      template 不能使用 v-show
+     -->
+    <span v-show="isShow">show显示</span>
+    <span v-show="!isShow">show不显示</span>
+    <div>
+      <input type="text" :value="value" @input="fn">
+      <!-- 上面的简写 -->
+      <input type="text" v-model="value">
+      <p>{{value}}</p>
+    </div>
+  </div>
+
+  <script src="./node_modules/vue/dist/vue.js"></script>
+  <script>
+    // data 中也可以写方法，但是this指向不是vue实例
+    // methods 里的方法this都通过bind绑定为vue实例，后续无法再更改this了
+    const vm = new Vue({
+      el: '#app',
+      methods: {
+        fn(event) {
+          this.value = event.target.value;
+        }
+      },
+      data() {
+        return {
+          name: 'linzijun',
+          tmp: '<h3>Hello</h3>',
+          title: 'hello',
+          arr: [
+            {
+              name: '香蕉',
+              color: '黄色'
+            },
+            {
+              name: '西瓜',
+              color: '红色'
+            },
+          ],
+          isShow: true,
+          value: 'input value'
+        };
+      }
+    });
+    vm.name = 'ieunji';
+  </script>
+</body>
+
+</html>
