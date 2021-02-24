@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <!-- <span>{{fullname}}</span> -->
+  </div>
+  <script src="./node_modules/vue/dist/vue.js"></script>
+  <script>
+    // computed 计算
+    // watch 监控
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          name: 'linzijun'
+        };
+      },
+      watch: {
+        name: {
+          handler(newValue) {
+            console.log('watch', newValue);
+          },
+          // immediate: true, // 立即执行一次
+          // deep: true, // 深度监控
+        }
+      },
+      // computed 实现与 watch 基本一致，多了 lazy: true 和 dirty 属性，当 dirty 属性为 true 时代表需要重新求值
+      // dirty 为 false 时走缓存
+      computed: {
+        fullname() {
+          return this.name + 'hello';
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .content {
+      width: 150px;
+      height: 100px;
+      background: lightsalmon;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div v-click-outside="blur">
+      <input type="text" @focus="focus">
+      <div class="content" v-if="isShow"></div>
+    </div>
+  </div>
+  <script src="./node_modules/vue/dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          isShow: false
+        };
+      },
+      methods: {
+        focus() {
+          this.isShow = true;
+        },
+        blur() {
+          this.isShow = false;
+        }
+      },
+      directives: {
+        clickOutside: {
+          bind(el, bindings, vnode) {
+            el.__clickOutsideCallback__ = event => {
+              if (el.contains(event.target)) {
+
+              } else {
+                bindings.value();
+              }
+            };
+            document.addEventListener('click', el.__clickOutsideCallback__);
+          },
+          unbind() {
+            document.removeEventListener('click', el.__clickOutsideCallback__);
+          }
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <textarea v-model="text"></textarea>
+    <span>{{text}}</span>
+
+    <select v-model="selectValue" multiple>
+      <!-- <option value="" disabled>请选择</option> -->
+      <option v-for="item in selectOptions" :value="item.value">
+        {{item.name}}
+      </option>
+    </select>
+    <span>{{selectValue}}</span>
+
+    <input type="radio" value="男" v-model="radioValue">男
+    <input type="radio" value="女" v-model="radioValue">女
+    <span>{{radioValue}}</span>
+
+    <input type="checkbox" value="游泳" v-model="checkboxValue">游泳
+    <input type="checkbox" value="健身" v-model="checkboxValue">健身
+    <span>{{checkboxValue}}</span>
+
+    <!-- v-model 修饰符 -->
+    <input type="text" v-model.trim="inputValue">
+    <input type="text" v-model.number="inputValue">
+    <span>{{inputValue}}</span>
+  </div>
+
+  <script src="./node_modules/vue/dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          text: 'hello',
+          selectOptions: [
+            { name: '香蕉', value: 0 },
+            { name: '苹果', value: 1 }
+          ],
+          selectValue: [],
+          radioValue: '男',
+          checkboxValue: [],
+          inputValue: ''
+        };
+      }
+    });
+  </script>
+</body>
+
+</html>

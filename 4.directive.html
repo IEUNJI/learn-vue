@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <!-- 指令的组成 v-model.a.b.c="abc" -->
+    <!-- 让输入框自动获取焦点 -->
+    <!-- 全局指令：所有组件（实例）都可以使用 -->
+    <input type="text" v-focus.color="color">
+  </div>
+  <script src="./node_modules/vue/dist/vue.js"></script>
+  <script>
+    // Vue.directive('focus', function (el, bindings, vnode) {
+    //   // 此方法默认在绑定和更新的时候执行（依赖收集，只在相关依赖变化时才会重新执行）
+    //   console.log(el, bindings, vnode);
+    //   Vue.nextTick(function () {
+    //     el.focus();
+    //   });
+    // });
+    Vue.directive('focus', {
+      bind() {
+
+      },
+      inserted(el, bindings, vnode) { // 指令元素挂载时执行
+        console.log(el, bindings, vnode); // DOM元素 参数 上下文
+        console.log(bindings.modifiers); // 修饰符
+        console.log(bindings.value); // 参数值
+        el.focus();
+      },
+      update() {
+
+      },
+      unbind() { // 指令元素卸载时执行
+
+      }
+    });
+
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          color: 'orange'
+        };
+      }
+    });
+  </script>
+</body>
+
+</html>
