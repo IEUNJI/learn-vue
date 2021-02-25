@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <span>{{getFullName}}</span>
+    <span>{{count}}</span>
+    <span>全选</span>
+    <input type="checkbox" v-model="checkAll">
+    <input type="checkbox" v-for="(item, index) in checks" v-model="item.value">
+  </div>
+
+  <script src="./node_modules/vue/dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          count: 0,
+          firstname: 'lin',
+          lastname: 'zijun',
+          checks: [
+            { value: true },
+            { value: false },
+            { value: true }
+          ]
+        };
+      },
+      computed: {
+        getFullName() {
+          console.log('计算');
+          return this.firstname + this.lastname;
+        },
+        checkAll: {
+          get() {
+            return this.checks.every(item => item.value);
+          },
+          set(value) {
+            this.checks.forEach(item => item.value = value);
+          }
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
