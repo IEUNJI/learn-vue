@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <span>{{text}}</span>
+  </div>
+
+  <script src="./node_modules/vue/dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          text: 'Hello'
+        };
+      },
+      beforeCreate() {
+        console.log('beforeCreate', this);
+      },
+      created() {
+        console.log('created', this);
+      },
+      beforeMount() {
+        console.log('beforeMount', this);
+      },
+      // render() {
+      //   console.log('render');
+      // },
+      mounted() {
+        console.log('mounted', this);
+      },
+      // 组件化的好处：方便复用，比较好维护，减少不必要的渲染
+      // vue的更新方式是组件级的
+      beforeUpdate() {
+        console.log('beforeUpdate');
+      },
+      updated() {
+        console.log('updated');
+      },
+      beforeDestroy() {
+        console.log('beforeDestroy');
+      },
+      destroyed() {
+        console.log('destroyed');
+      }
+    });
+  </script>
+</body>
+
+</html>

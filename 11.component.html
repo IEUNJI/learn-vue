@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <component1 :num="num"></component1>
+  </div>
+
+  <script src="./node_modules/vue/dist/vue.js"></script>
+  <script>
+    const component1 = {
+      template: `<div>子{{num}}</div>`,
+      props: ['num'],
+      data() {
+        return {};
+      }
+    };
+
+    const vm = new Vue({
+      el: '#app',
+      data() {
+        return {
+          text: 'Hello',
+          num: 100
+        };
+      },
+      components: {
+        component1,
+      }
+    });
+  </script>
+</body>
+
+</html>
