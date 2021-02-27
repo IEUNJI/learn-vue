@@ -1,8 +1,11 @@
 <template>
   <div class="parent">
     <span>Parent {{ mny }}</span>
-    <Son1 :mny="mny" @change="changeMoney" />
-    <Son2 />
+    <Son1 :mny="mny" @change="changeMoney" @click="say" />
+    <!-- <Son2 :mny="mny" @update:mny="mny = $event" /> -->
+    <!-- <Son2 :mny.sync="mny" /> -->
+    <!-- <Son2 :value="mny" @input="mny = $event" /> -->
+    <!-- <Son2 v-model="mny" /> -->
   </div>
 </template>
 
@@ -21,6 +24,9 @@ export default {
     };
   },
   methods: {
+    say() {
+      console.log('say');
+    },
     changeMoney(newVal) {
       this.mny += newVal;
     }
