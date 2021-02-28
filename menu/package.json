@@ -1,0 +1,16 @@
+{
+  "name": "menu",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "element-ui": "^2.15.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "ieunji <2690055722@qq.com>",
+  "license": "MIT"
+}
