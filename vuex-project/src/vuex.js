@@ -11,64 +11,141 @@ function install(_Vue) {
 
       if (this.$options.store) { // 根组件
         this.$store = this.$options.store;
-        console.log('根组件', this);
+        // console.log('根组件', this);
       } else if (this.$parent && this.$parent.$store) {
         this.$store = this.$parent.$store;
-        console.log('组件', this);
+        // console.log('组件', this);
       } else {
-        console.log('其他组件', this);
+        // console.log('其他组件', this);
       }
     }
   });
 }
 
+class ModuleCollection {
+  constructor(options) {
+    this.register([], options);
+  }
+
+  register(path, rootModule) {
+    const module = {
+      _rawModule: rootModule,
+      _children: {},
+      state: rootModule.state
+    };
+
+    if (path.length === 0) {
+      this.root = module;
+    } else {
+      const parent = path.slice(0, -1).reduce((root, key) => {
+        return root._children[key];
+      }, this.root);
+      parent._children[path[path.length - 1]] = module;
+    }
+
+    if (rootModule.modules) {
+      Object.keys(rootModule.modules).forEach(key => {
+        this.register(path.concat(key), rootModule.modules[key]);
+      });
+    }
+  }
+}
+
+function installModule(store, rootState, path, rootModule) {
+  if (path.length > 0) {
+    const parent = path.slice(0, -1).reduce((root, key) => {
+      return root[key];
+    }, rootState);
+    Vue.set(parent, path[path.length - 1], rootModule.state);
+  }
+
+  const getters = rootModule._rawModule.getters;
+  if (getters) {
+    Object.keys(getters).forEach(key => {
+      Object.defineProperty(store.getters, key, {
+        get: () => {
+          return getters[key].call(undefined, rootModule.state);
+        }
+      });
+    });
+  }
+
+  const mutations = rootModule._rawModule.mutations;
+  if (mutations) {
+    Object.keys(mutations).forEach(key => {
+      const mfns = store.mutations[key] || [];
+      mfns.push(payload => {
+        mutations[key].call(store, rootModule.state, payload);
+        store._subscribers.forEach(fn => {
+          fn.call(undefined, { type: key, payload }, rootState);
+        });
+      });
+      store.mutations[key] = mfns;
+    });
+  }
+
+  const actions = rootModule._rawModule.actions;
+  if (actions) {
+    Object.keys(actions).forEach(key => {
+      const afns = store.actions[key] || [];
+      afns.push(payload => {
+        actions[key].call(store, store, payload);
+      });
+      store.actions[key] = afns;
+    });
+  }
+
+  const modules = rootModule._children;
+  Object.keys(modules).forEach(key => {
+    const module = modules[key];
+    installModule(store, rootState, path.concat(key), module);
+  });
+}
+
 class Store {
   constructor(options = {}) {
-    this._state = new Vue({
+    this._s = new Vue({
       data() {
         return {
           state: options.state
         };
       }
     });
-
-    const getters = options.getters;
+    this._subscribers = [];
     this.getters = {};
-    Object.keys(getters).forEach(key => {
-      Object.defineProperty(this.getters, key, {
-        get: () => {
-          return getters[key].call(undefined, this.state);
-        }
-      });
-    });
-
-    const mutations = options.mutations;
     this.mutations = {};
-    Object.keys(mutations).forEach(key => {
-      this.mutations[key] = payload => {
-        mutations[key].call(this, this.state, payload);
-      };
-    });
-
-    const actions = options.actions;
     this.actions = {};
-    Object.keys(actions).forEach(key => {
-      this.actions[key] = payload => {
-        actions[key].call(this, this, payload);
-      };
-    });
+    this._modules = new ModuleCollection(options);
+    console.log(this._modules);
+    installModule(this, this.state, [], this._modules.root);
+
+    if (options.plugins) {
+      options.plugins.forEach(plugin => {
+        plugin.call(undefined, this);
+      });
+    }
+  }
+
+  subscribe = fn => {
+    this._subscribers.push(fn);
   }
 
   commit = (mutationName, payload) => {
-    this.mutations[mutationName](payload);
+    const mfns = this.mutations[mutationName] || [];
+    mfns.forEach(fn => {
+      fn(payload);
+    });
   }
 
   dispatch = (actionName, payload) => {
-    this.actions[actionName](payload);
+    const afns = this.actions[actionName] || [];
+    afns.forEach(fn => {
+      fn(payload);
+    });
   }
 
   get state() {
-    return this._state.state;
+    return this._s.state;
   }
 }
 

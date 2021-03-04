@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <p>{{$store.state.age}}</p>
+    <p>{{$store.state.a.c.c}}</p>
     <p>{{$store.getters.myAge}}</p>
+    <p>{{$store.getters.computedC}}</p>
     <button @click="add">更改</button>
     <button @click="minus">异步更改</button>
   </div>
@@ -14,7 +16,7 @@ export default {
     
   },
   mounted() {
-    
+    console.log(this.$store);
   },
   methods: {
     add() {
