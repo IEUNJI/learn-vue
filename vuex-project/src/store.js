@@ -1,12 +1,12 @@
 import Vue from 'vue'
-import Vuex from 'vuex'
+import Vuex from './vuex'
 
 Vue.use(Vuex);
 
 function persits(store) {
-  console.log(this);
+  console.log(this, arguments);
   store.subscribe(function (mutation, state) {
-    console.log(this, mutation, state);
+    console.log('订阅', this, arguments);
     sessionStorage.setItem('vuex-state', JSON.stringify(state))
   });
 };
@@ -29,12 +29,19 @@ export default new Vuex.Store({
           },
           mutations: {
             syncAdd(state, payload) {
+              console.log('模块 mutations', this, arguments);
               console.log(state, payload);
             }
           },
           getters: {
-            computedC(state) {
+            computedC(state, getters, rootState) {
+              console.log('模块getters参数', this, arguments);
               return state.c + 'ba';
+            }
+          },
+          actions: {
+            asyncMinus(store, payload) {
+              console.log('模块actions', this, arguments);
             }
           }
         }
@@ -50,12 +57,14 @@ export default new Vuex.Store({
     age: 18
   },
   getters: {
-    myAge(state) {
+    myAge(state, getters) {
+      console.log('根getters参数', this, arguments);
       return state.age + 1;
     }
   },
   mutations: {
     syncAdd(state, payload) {
+      console.log('根 mutations', this, arguments);
       state.age += payload;
     },
     syncMinus(state, payload) {
@@ -64,7 +73,7 @@ export default new Vuex.Store({
   },
   actions: {
     asyncMinus(store, payload) {
-      console.log('actions', this);
+      console.log('根actions', this, arguments);
       setTimeout(() => {
         store.commit('syncMinus', payload);
       }, 1000);

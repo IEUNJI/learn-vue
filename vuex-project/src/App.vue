@@ -16,7 +16,7 @@ export default {
     
   },
   mounted() {
-    console.log(this.$store);
+    console.log('store', this.$store);
   },
   methods: {
     add() {
