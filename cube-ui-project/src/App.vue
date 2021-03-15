@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <div class="container">
-      <router-view></router-view>
+      <transition :name="move">
+        <router-view></router-view>
+      </transition>
     </div>
     <div class="footer">
       <cube-tab-bar
@@ -36,12 +38,21 @@ export default {
           icon: "iconfont icon-xiaolian",
         },
       ],
+      move: "slide-left",
     };
   },
   watch: {
     $route: {
       handler(to, from) {
+        console.log("路由变化", to, from);
         this.selectedLabelDefault = to.path;
+        if (to && from) {
+          if (to.meta.idx > from.meta.idx) {
+            this.move = "slide-left";
+          } else {
+            this.move = "slide-right";
+          }
+        }
       },
       immediate: true,
     },
@@ -66,6 +77,7 @@ html, body, #app {
 }
 
 .container {
+  position: relative;
   flex: 1;
   overflow: auto;
 }
@@ -79,5 +91,24 @@ html, body, #app {
     font-size: 22px;
     line-height: 26px;
   }
+}
+
+.slide-left-enter-active, .slide-left-leave-active, .slide-right-enter-active, .slide-right-leave-active {
+  transition: all 0.25s ease;
+}
+
+.slide-left-enter-active, .slide-right-enter-active {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+.slide-left-enter, .slide-right-leave-to {
+  transform: translateX(100%);
+}
+
+.slide-left-leave-to, .slide-right-enter {
+  transform: translateX(-100%);
 }
 </style>

@@ -54,7 +54,7 @@ const sleep = (time) => {
 }
 const slides = require('./slides');
 router.get('/api/slides', async ctx => {
-  // await sleep(2000);
+  await sleep(2000);
   ctx.body = {
     code: 0,
     data: slides
