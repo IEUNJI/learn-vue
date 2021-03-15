@@ -1,5 +1,15 @@
 <template>
   <div>
-    <span>Profile</span>
+    <cube-button :primary="true" @click="toLogin">登录</cube-button>
   </div>
 </template>
+
+<script>
+export default {
+  methods: {
+    toLogin() {
+      this.$router.push('/login');
+    }
+  }
+};
+</script>

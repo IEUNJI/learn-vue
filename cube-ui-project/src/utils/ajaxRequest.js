@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { Toast } from 'cube-ui';
+import store from '@/store/store';
+import * as types from '@/store/actions-type';
 
 class ajaxRequest {
   constructor() {
-    console.log(process.env.NODE_ENV);
     this.baseURL = process.env.NODE_ENV !== 'production' ? 'http://localhost:3000/api' : '/';
-    this.timeout = 3000;
-    console.log(Toast);
+    this.timeout = 10000;
     this.toast = Toast.$create({
       txt: '正在加载',
       time: 0
@@ -17,7 +17,10 @@ class ajaxRequest {
   setInterceptor(instance, url) {
     const showToast = () => {
       if (Object.keys(this.queue).length === 0) {
-        console.log('真的显示toast');
+        this.toast = Toast.$create({
+          txt: '正在加载',
+          time: 0
+        });
         this.toast.show();
       }
       this.queue[url] = url;
@@ -25,27 +28,31 @@ class ajaxRequest {
     const hideToast = () => {
       delete this.queue[url];
       if (Object.keys(this.queue).length === 0) {
-        console.log('真的关闭toast');
         this.toast.hide();
       }
     };
 
     instance.interceptors.request.use(config => {
+      config.headers.token = localStorage.getItem('token') || '';
+
+      config.cancelToken = new axios.CancelToken(c => {
+        store.commit(types.PUSH_TOKEN, c);
+      });
+
       showToast();
-      console.log('请求拦截', config);
       return config;
     });
 
     instance.interceptors.response.use(res => {
       hideToast();
-      console.log('响应拦截', res);
       if (res.data.code == 0) {
         return res.data.data;
       } else { // 业务错误
-        return res.data;
+        return Promise.reject(res.data);
       }
     }, err => { // ajax 错误
       hideToast();
+      console.log('捕获ajax错误，抛出', err);
       return Promise.reject(err);
     });
   }

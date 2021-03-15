@@ -44,7 +44,6 @@ export default {
   watch: {
     $route: {
       handler(to, from) {
-        console.log("路由变化", to, from);
         this.selectedLabelDefault = to.path;
         if (to && from) {
           if (to.meta.idx > from.meta.idx) {

@@ -16,7 +16,7 @@
           <div :id="data.id" class="item">
             <h2>{{ data.title }}</h2>
             <img :src="data.pic" />
-            <p>{{ data.price }}</p>
+            <p>{{ data.price | addCurrency('￥') }}</p>
           </div>
         </template>
       </cube-recycle-list>
@@ -52,7 +52,6 @@ export default {
     ...mapActions([types.SET_CATEGORIES, types.SET_SLIDES]),
     ...mapMutations([types.SET_CURRENT_LESSON]),
     change(value) {
-      console.log("当前课程", value);
       this[types.SET_CURRENT_LESSON](value);
       this.hasMore = true;
       this.offsetIndex = 0;
@@ -60,13 +59,11 @@ export default {
     },
     async onFetch() {
       if (this.hasMore) {
-        console.log("onFetch", this.currentLesson);
         const { result, hasMore } = await fetchLessonList({
           id: this.currentLesson,
           size: this.size,
           offset: this.offsetIndex,
         });
-        console.log("list data", result, hasMore);
         this.hasMore = hasMore;
         this.offsetIndex += result.length;
         return result;
@@ -76,12 +73,8 @@ export default {
     },
   },
   mounted() {
-    this[types.SET_CATEGORIES]().then(() => {
-      console.log("ajax end", this, types);
-    });
-    this[types.SET_SLIDES]().then(() => {
-      console.log("轮播图 ajax end", this, types);
-    });
+    this[types.SET_CATEGORIES]();
+    this[types.SET_SLIDES]();
   },
 };
 </script>

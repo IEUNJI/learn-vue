@@ -33,7 +33,6 @@ export default {
           value: -1,
         },
       ];
-      console.log("算选项");
       return this.categories.length ? [[...defaultActive, ...this.categories]] : [defaultActive];
     },
   },

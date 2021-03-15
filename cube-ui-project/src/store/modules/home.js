@@ -11,18 +11,12 @@ export default {
   actions: {
     [types.SET_CATEGORIES]({ commit }) {
       return fetchCategory().then(data => {
-        console.log('数据', data);
         commit(types.SET_CATEGORIES, data);
-      }).catch(err => {
-        console.log('err msg', err);
       });
     },
     [types.SET_SLIDES]({ commit }) {
       return fetchSlides().then(data => {
-        console.log('轮播图数据', data);
         commit(types.SET_SLIDES, data);
-      }).catch(err => {
-        console.log('err msg', err);
       });
     },
   },
@@ -32,11 +26,9 @@ export default {
       state.categories = payload;
     },
     [types.SET_CURRENT_LESSON](state, payload) {
-      console.log('vuex', payload);
       state.currentLesson = payload;
     },
     [types.SET_SLIDES](state, payload) {
-      console.log('vuex轮播图', payload);
       state.slides = payload;
     }
   },
