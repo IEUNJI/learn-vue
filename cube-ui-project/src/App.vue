@@ -2,7 +2,12 @@
   <div id="app">
     <div class="container">
       <transition :name="move">
-        <router-view></router-view>
+        <keep-alive>
+          <router-view v-if="$route.meta.keepAlive"></router-view>
+        </keep-alive>
+      </transition>
+      <transition :name="move">
+          <router-view v-if="!$route.meta.keepAlive"></router-view>
       </transition>
     </div>
     <div class="footer">

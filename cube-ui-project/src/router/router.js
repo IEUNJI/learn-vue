@@ -17,22 +17,36 @@ const router = new Router({
       name: 'home',
       component: Home,
       meta: {
-        idx: 0
+        idx: 0,
+        keepAlive: true,
       }
     },
     {
       path: '/course',
       name: 'course',
       meta: {
-        idx: 1
+        idx: 1,
+        keepAlive: true,
+        needLogin: true,
       },
       component: loadable(() => import(/* webpackChunkName: "course" */ '@/views/Course/Course.vue')),
+      children: [
+        {
+          path: '/course/1',
+          name: 'course1',
+          meta: {
+            idx: 11,
+          },
+          component: loadable(() => import(/* webpackChunkName: "course" */ '@/views/Course/Course.vue')),
+        }
+      ]
     },
     {
       path: '/profile',
       name: 'profile',
       meta: {
-        idx: 2
+        idx: 2,
+        keepAlive: true,
       },
       component: loadable(() => import(/* webpackChunkName: "profile" */ '@/views/Profile/Profile.vue')),
     },

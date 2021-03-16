@@ -16,7 +16,7 @@
           <div :id="data.id" class="item">
             <h2>{{ data.title }}</h2>
             <img :src="data.pic" />
-            <p>{{ data.price | addCurrency('￥') }}</p>
+            <p>{{ data.price | addCurrency("￥") }}</p>
           </div>
         </template>
       </cube-recycle-list>
@@ -75,7 +75,17 @@ export default {
   mounted() {
     this[types.SET_CATEGORIES]();
     this[types.SET_SLIDES]();
+    this.$refs.list.$el.addEventListener('scroll', e => {
+      sessionStorage.setItem('position', e.target.scrollTop);
+    });
+    sessionStorage.removeItem('position');
   },
+  activated() {
+    this.$refs.list.$el.scrollTop = sessionStorage.getItem('position') || 0;
+  },
+  deactivated() {
+    
+  }
 };
 </script>
 
@@ -83,6 +93,7 @@ export default {
 img {
   width: 100%;
   max-width: 100%;
+  object-fit: cover;
 }
 
 .home {

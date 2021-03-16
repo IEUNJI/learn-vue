@@ -39,7 +39,7 @@ router.get('/api/category', async ctx => {
     text: cat.name,
     value: cat.id
   }));
-  await sleep(2000);
+  await sleep(500);
   ctx.body = {
     code: 0,
     data: categories
@@ -54,7 +54,7 @@ const sleep = (time) => {
 }
 const slides = require('./slides');
 router.get('/api/slides', async ctx => {
-  await sleep(3000);
+  await sleep(1000);
   ctx.body = {
     code: 0,
     data: slides
@@ -80,7 +80,7 @@ router.get('/api/lessonList/:id', async ctx => {
     result = item.children.slice(offset, offset + size);
 
   }
-  await sleep(4000);
+  await sleep(2000);
   ctx.body = {
     code: 0,
     data: {

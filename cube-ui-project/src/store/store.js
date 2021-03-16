@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import * as types from '@/store/actions-type';
-import { login } from "@/api/user";
+import { login, validate } from "@/api/user";
 
 import home from './modules/home';
 
@@ -15,6 +15,7 @@ export default new Vuex.Store({
   state: {
     ajaxToken: [],
     user: {},
+    hasPermission: false,
   },
   mutations: {
     [types.PUSH_TOKEN](state, cancel) {
@@ -26,17 +27,25 @@ export default new Vuex.Store({
       });
       state.ajaxToken = [];
     },
-    [types.LOGIN](state, user) {
-      console.log('user', user);
+    [types.SET_USER](state, user) {
       state.user = user;
+      state.hasPermission = true;
     },
   },
   actions: {
     [types.LOGIN]({ commit }, user) {
       return login(user).then(data => {
-        commit(types.LOGIN, data);
+        commit(types.SET_USER, data);
         return data;
       });
-    }
+    },
+    [types.VALIDATE]({ commit }) {
+      return validate().then(data => {
+        commit(types.SET_USER, data);
+        return true;
+      }).catch(e => {
+        return Promise.reject(false);
+      });
+    },
   },
 });

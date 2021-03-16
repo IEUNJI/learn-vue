@@ -58,6 +58,7 @@ export default {
       this[types.LOGIN](this.model)
         .then((res) => {
           localStorage.setItem('token', res.token);
+          this.$router.push('/');
         })
         .catch((err) => {
           Toast.$create({

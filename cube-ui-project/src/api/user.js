@@ -7,3 +7,9 @@ export const login = user => {
     data: user
   });
 };
+
+export const validate = () => {
+  return axios.request({
+    url: '/validate'
+  });
+};

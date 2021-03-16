@@ -9,3 +9,4 @@ export const CLEAR_TOKEN = 'CLEAR_TOKEN';
 
 export const SET_USER = 'SET_USER';
 export const LOGIN = 'LOGIN';
+export const VALIDATE = 'VALIDATE'; // 实时校验用户的登录状态
