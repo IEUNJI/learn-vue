@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <cube-form :model="model" @submit="submitHandler">
+  <div class="login">
+    <div class="login-form">
+      <cube-form :model="model" @submit="submitHandler">
       <cube-form-group>
         <cube-form-item :field="fields[0]"></cube-form-item>
         <cube-form-item :field="fields[1]"></cube-form-item>
@@ -9,6 +10,7 @@
         <cube-button type="submit">Submit</cube-button>
       </cube-form-group>
     </cube-form>
+    </div>
   </div>
 </template>
 
@@ -57,14 +59,14 @@ export default {
       e.preventDefault();
       this[types.LOGIN](this.model)
         .then((res) => {
-          localStorage.setItem('token', res.token);
-          this.$router.push('/');
+          localStorage.setItem("token", res.token);
+          this.$router.push("/");
         })
         .catch((err) => {
           Toast.$create({
             txt: err.data,
             time: 1000,
-            type: 'error'
+            type: "error",
           }).show();
         });
     },

@@ -7,10 +7,10 @@
         </keep-alive>
       </transition>
       <transition :name="move">
-          <router-view v-if="!$route.meta.keepAlive"></router-view>
+        <router-view v-if="!$route.meta.keepAlive"></router-view>
       </transition>
     </div>
-    <div class="footer">
+    <div class="footer" v-if="!$route.meta.hideFooter">
       <cube-tab-bar
         v-model="selectedLabelDefault"
         :data="tabs"

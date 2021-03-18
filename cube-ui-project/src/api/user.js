@@ -13,3 +13,14 @@ export const validate = () => {
     url: '/validate'
   });
 };
+
+export const upload = (fd) => {
+  return axios.request({
+    method: 'POST',
+    url: '/avatar',
+    Headers: {
+      'content-type': 'multipart/form-data'
+    },
+    data: fd
+  });
+};

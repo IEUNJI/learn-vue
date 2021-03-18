@@ -54,15 +54,27 @@ const router = new Router({
       path: '/login',
       name: 'login',
       meta: {
-        idx: 3
+        idx: 3,
+        hideFooter: true,
       },
       component: loadable(() => import(/* webpackChunkName: "login" */ '@/views/Login/Login.vue')),
+    },
+    {
+      path: "*",
+      meta: {
+        idx: 6
+      },
+      component: {
+        render(h) {
+          return <h2>未找到页面</h2>
+        }
+      },
     },
   ],
 });
 
 for (const key in hooks) {
-  router.beforeEach(hooks[key]);
+  router.beforeEach(hooks[key].bind(router));
 }
 
 export default router;

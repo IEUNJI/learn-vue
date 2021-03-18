@@ -10,3 +10,7 @@ export const CLEAR_TOKEN = 'CLEAR_TOKEN';
 export const SET_USER = 'SET_USER';
 export const LOGIN = 'LOGIN';
 export const VALIDATE = 'VALIDATE'; // 实时校验用户的登录状态
+
+export const SET_MENU_LIST = 'SET_MENU_LIST';
+
+export const UPLOAD = 'UPLOAD';
