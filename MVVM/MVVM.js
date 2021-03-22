@@ -1,3 +1,4 @@
+// 14分钟
 class Dep {
   constructor() {
     this.subs = []; // 存放所有的watcher
@@ -18,17 +19,20 @@ class Dep {
 
 // 观察者
 class Watcher {
-  constructor(vm, expr, cb) {
+  constructor(vm, expr, cb, node) {
     this.vm = vm;
     this.expr = expr;
     this.cb = cb;
+    this.node = node;
 
     // 默认先存放一个老值
     this.oldValue = this.get();
   }
 
   get() {
+    Dep.target = this;
     let value = CompileUtil.getVal(this.vm, this.expr);
+    Dep.target = null; // 在取值结束后清除watcher
     return value;
   }
 
@@ -57,14 +61,25 @@ class Observer { // 实现数据劫持
 
   defineReactive(obj, key, value) {
     this.observer(value);
+
+    let dep = new Dep();
+
     Object.defineProperty(obj, key, {
       get() {
+        // 创建watcher时，会收取到对应的内容，并把watcher放到全局上
+        if (Dep.target) {
+          dep.addSub(Dep.target);
+          // Dep.target = null; // 不能在这里取消，比如school.name其实应该把watcher放到school和name两个dep里
+          // 在这里取消就只会存在school里，name被清掉了就取不到了
+        }
         return value;
       },
       set: (newVal) => {
         if (newVal !== value) {
+          console.log('set');
           this.observer(newVal);
           value = newVal;
+          dep.notify();
         }
       }
     });
@@ -98,8 +113,9 @@ class Compiler {
       let { name, value: expr } = attr;
       if (this.isDirective(name)) {
         let [, directive] = name.split('-');
+        let [directiveName, eventName] = directive.split(':');
         // 需要调用不同的指令来处理
-        CompileUtil[directive](node, expr, this.vm);
+        CompileUtil[directiveName](node, expr, this.vm, eventName);
       }
     });
   }
@@ -145,34 +161,57 @@ class Compiler {
 
 let CompileUtil = {
   // node 是节点 expr是表达式 vm是当前实例
+  // 需要绑定事件
   model(node, expr, vm) {
     let fn = this.updater['modelUpdater'];
     new Watcher(vm, expr, (newVal) => { // 输入框是一个观察者
-      console.log('watcher 传入的与获取的', newVal, this.getVal(vm, expr));
       fn(node, newVal);
+    }, node);
+    node.addEventListener('input', e => {
+      let inpVal = e.target.value; // 用户输入的值
+      this.setValue(vm, expr, inpVal);
     });
     let value = this.getVal(vm, expr);
     fn(node, value);
   },
-  html() {
-
+  on(node, expr, vm, eventName) { // v-on:click="change"
+    node.addEventListener(eventName, (e) => {
+      vm[expr].call(vm, e);
+    })
+  },
+  html(node, expr, vm) {
+    let fn = this.updater['htmlUpdater'];
+    new Watcher(vm, expr, (newVal) => {
+      fn(node, newVal);
+    }, node);
+    let value = this.getVal(vm, expr);
+    fn(node, value);
   },
   text(node, expr, vm) {
     let fn = this.updater['textUpdater'];
     let content = expr.replace(/\{\{(.+?)\}\}/g, (...args) => {
       new Watcher(vm, args[1], (newVal) => {
-        console.log('watcher 传入的与获取的', newVal, this.getVal(vm, args[1]));
-        fn(node, newVal);
-      });
+        fn(node, this.getContentValue(vm, expr));
+      }, node);
       return this.getVal(vm, args[1]);
     });
     fn(node, content);
   },
-  getContentValue() {
-    
+  getContentValue(vm, expr) {
+    return expr.replace(/\{\{(.+?)\}\}/g, (...args) => {
+      return this.getVal(vm, args[1]);
+    });
   },
   getVal(vm, expr) {
     return expr.split('.').reduce((data, current) => {
+      return data[current];
+    }, vm.$data);
+  },
+  setValue(vm, expr, value) {
+    expr.split('.').reduce((data, current, index, arr) => {
+      if (index === arr.length - 1) {
+        data[current] = value;
+      }
       return data[current];
     }, vm.$data);
   },
@@ -180,8 +219,8 @@ let CompileUtil = {
     modelUpdater(node, value) {
       node.value = value;
     },
-    htmlUpdater() {
-
+    htmlUpdater(node, value) {
+      node.innerHTML = value;
     },
     textUpdater(node, value) {
       node.textContent = value;
@@ -194,6 +233,9 @@ class Vue {
   constructor(options) {
     this.$el = options.el;
     this.$data = options.data;
+    let computed = options.computed;
+    let methods = options.methods;
+    console.log(computed);
 
     // 根元素存在 编译模板
     if (this.$el) {
@@ -203,8 +245,41 @@ class Vue {
 
       console.log(this.$data);
 
+      // 把vm上的取值操作都代理到vm.$data上
+      this.proxyVm(this.$data);
+
+      for (let key in computed) {
+        Object.defineProperty(this.$data, key, {
+          get: () => {
+            return computed[key].call(this);
+          }
+        });
+      }
+
+      for (let key in methods) {
+        Object.defineProperty(this, key, {
+          get: () => {
+            return methods[key];
+          }
+        });
+      }
+
       // 编译
       new Compiler(this.$el, this);
+    }
+  }
+
+  proxyVm(data) {
+    for (let key in data) {
+      // 取值代理
+      Object.defineProperty(this, key, {
+        get() {
+          return data[key];
+        },
+        set(val) {
+          data[key] = val;
+        }
+      });
     }
   }
 }

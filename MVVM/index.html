@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
   <meta charset="UTF-8">
@@ -18,6 +18,9 @@
       <li>2</li>
     </ul>
     {{school.name}}
+    <div>计算属性：{{newName}}</div>
+    <button v-on:click="change">更新name</button>
+    <div v-html="message"></div>
   </div>
 
   <!-- <script src="./node_modules/vue/dist/vue.js"></script> -->
@@ -29,10 +32,19 @@
         school: {
           name: 'hfut',
           age: 50
+        },
+        message: '<h1>hello</h1>'
+      },
+      methods: {
+        change() {
+          this.school.name = 'uutt';
         }
       },
-      methods: {},
-      computed: {},
+      computed: {
+        newName() {
+          return '新' + this.school.name;
+        }
+      },
     });
     // console.log(vm);
   </script>
