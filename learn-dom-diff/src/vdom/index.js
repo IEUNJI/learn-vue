@@ -1,7 +1,8 @@
 import h from './h.js';
-import { render } from './patch.js';
+import { render, patch } from './patch.js';
 
 export {
   h,
-  render
+  render,
+  patch
 }
