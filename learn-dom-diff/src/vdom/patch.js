@@ -92,12 +92,27 @@ function isSameVnode(oldVnode, newVnode) {
   return oldVnode.key === newVnode.key && oldVnode.type === newVnode.type;
 }
 
+function createMapBykeyToIndex(oldChildren) {
+  let map = {};
+
+  for (let i = 0; i < oldChildren.length; i++) {
+    let child = oldChildren[i];
+
+    if (child.key) {
+      map[child.key] = i;
+    }
+  }
+
+  return map;
+}
+
 // diff
 function updateChildren(parent, oldChildren, newChildren) {
   let oldStartIndex = 0;
   let oldStartVnode = oldChildren[oldStartIndex];
   let oldEndIndex = oldChildren.length - 1;
   let oldEndVnode = oldChildren[oldEndIndex];
+  let map = createMapBykeyToIndex(oldChildren);
 
   let newStartIndex = 0;
   let newStartVnode = newChildren[newStartIndex];
@@ -105,6 +120,12 @@ function updateChildren(parent, oldChildren, newChildren) {
   let newEndVnode = newChildren[newEndIndex];
 
   while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
+    if (typeof oldStartVnode === 'undefined') {
+      oldStartVnode = oldChildren[++oldStartIndex];
+    } else if (typeof oldEndVnode === 'undefined') {
+      oldEndVnode = oldChildren[--oldEndIndex];
+    }
+
     if (isSameVnode(oldStartVnode, newStartVnode)) {
       patch(oldStartVnode, newStartVnode);
       oldStartVnode = oldChildren[++oldStartIndex];
@@ -113,6 +134,28 @@ function updateChildren(parent, oldChildren, newChildren) {
       patch(oldEndVnode, newEndVnode);
       oldEndVnode = oldChildren[--oldEndIndex];
       newEndVnode = newChildren[--newEndIndex];
+    } else if (isSameVnode(oldStartVnode, newEndVnode)) {
+      patch(oldStartVnode, newEndVnode);
+      parent.insertBefore(oldStartVnode.domElement, oldEndVnode.domElement.nextSibling);
+      oldStartVnode = oldChildren[++oldStartIndex];
+      newEndVnode = newChildren[--newEndIndex];
+    } else if (isSameVnode(oldEndVnode, newStartVnode)) {
+      patch(oldEndVnode, newStartVnode);
+      parent.insertBefore(oldEndVnode.domElement, oldStartVnode.domElement);
+      oldEndVnode = oldChildren[--oldEndIndex];
+      newStartVnode = newChildren[++newStartIndex];
+    } else {
+      let index = map[newStartVnode.key];
+      if (typeof index === 'undefined') {
+        console.log('新创建', newStartVnode.key);
+        parent.insertBefore(createDomElementFromVnode(newStartVnode), oldStartVnode.domElement);
+      } else {
+        console.log('更新', newStartVnode.key);
+        patch(oldChildren[index], newStartVnode);
+        parent.insertBefore(oldChildren[index].domElement, oldStartVnode.domElement);
+        oldChildren[index] = undefined;
+      }
+      newStartVnode = newChildren[++newStartIndex];
     }
   }
 
@@ -120,6 +163,15 @@ function updateChildren(parent, oldChildren, newChildren) {
     for (let i = newStartIndex; i <= newEndIndex; i++) {
       let beforeElement = typeof newChildren[newEndIndex + 1] === 'undefined' ? null : newChildren[newEndIndex + 1].domElement;
       parent.insertBefore(createDomElementFromVnode(newChildren[i]), beforeElement);
+    }
+  }
+
+  if (oldStartIndex <= oldEndIndex) {
+    for (let i = oldStartIndex; i <= oldEndIndex; i++) {
+      if (oldChildren[i]) {
+        console.log('删除', oldChildren[i].key);
+        parent.removeChild(oldChildren[i].domElement);
+      }
     }
   }
 }
