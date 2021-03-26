@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>learn vue3</title>
+</head>
+
+<body>
+  <div id="container"></div>
+
+  <script src="./node_modules/vue/dist/vue.global.js"></script>
+  <script>
+    function usePosition() {
+      const position = Vue.reactive({
+        x: 0,
+        y: 0
+      });
+
+      function update(e) {
+        position.x = e.pageX;
+        position.y = e.pageY;
+      }
+
+      Vue.onMounted(() => {
+        window.addEventListener('mousemove', update);
+      });
+
+      Vue.onUnmounted(() => {
+        window.removeEventListener('mousemove', update);
+      });
+
+      return Vue.toRefs(position);
+    }
+
+    // composition api
+    const App = {
+      setup() { // 相当于 created，只会执行一次
+        const state = Vue.reactive({
+          name: 'ieunji'
+        });
+        const { x, y } = usePosition();
+
+        function change() {
+          state.name = 'linzijun';
+        }
+
+        return {
+          state,
+          change,
+          x,
+          y
+        };
+      },
+      template: `<div @click="change"><span>{{state.name}}</span><span>x: {{x}}</span><span>y: {{y}}</span></div>`
+    };
+
+    Vue.createApp(App).mount(document.getElementById('container'));
+  </script>
+</body>
+
+</html>
